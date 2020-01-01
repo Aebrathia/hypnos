@@ -16,8 +16,8 @@ class Hypnos {
 
   async createRoutes () {
     const cwd = process.cwd()
-    const resources = await import(path.join(cwd, 'api/index.js'))
-    const models = await import(path.join(cwd, 'models/index.js'))
+    const { default: _, ...resources } = await import(path.join(cwd, 'api/index.js'))
+    const { default: __, ...models } = await import(path.join(cwd, 'models/index.js'))
 
     Object.entries(resources).forEach(([name, Resource]) => {
       const resourceName = name.toLowerCase()

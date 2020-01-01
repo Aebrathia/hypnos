@@ -17,7 +17,7 @@ class Resource {
   }
 
   getOne = async (req, res) => {
-    return this.Model.find(req.params.id)
+    return this.Model.find(Number(req.params.id))
   }
 
   getMany = async (req, res) => {
@@ -25,7 +25,7 @@ class Resource {
   }
 
   update = async (req, res) => {
-    return this.Model.update(req.body)
+    return this.Model.update({ ...req.body, id: Number(req.params.id) })
   }
 
   create = async (req, res) => {
@@ -33,7 +33,7 @@ class Resource {
   }
 
   delete = async (req, res) => {
-    return this.Model.delete(req.params.id)
+    return this.Model.delete(Number(req.params.id))
   }
 }
 

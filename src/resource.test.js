@@ -1,54 +1,42 @@
 import Resource from './resource.js'
-
-class ModelMock {
-  static async create (user) {
-    return { id: 2, ...user }
-  }
-
-  static async findAll () {
-    return [{ id: 1, firstName: 'Achille' }]
-  }
-
-  static async find (id) {
-    return { id, firstName: 'Achille' }
-  }
-
-  static async update (user) {
-    return { id: 1, firstName: 'Achille', ...user }
-  }
-
-  static async delete (id) {
-    return id
-  }
-}
+import Users from '../__mocks__/users'
 
 describe('Resource', () => {
-  const resource = new Resource(ModelMock)
+  const resource = new Resource(Users)
 
   describe('getOne', () => {
     it('returns the requested item', async () => {
+      expect.assertions(2)
       const req = { params: { id: 1 } }
-      expect(await resource.getOne(req)).toEqual({ id: 1, firstName: 'Achille' })
+      expect(await resource.getOne(req)).toEqual({ id: 1, firstName: 'Achille', lastName: 'Peleus' })
+      expect(Users.find).toHaveBeenCalledWith(1)
     })
   })
 
   describe('getMany', () => {
     it('returns all items', async () => {
-      expect(await resource.getMany()).toEqual([{ id: 1, firstName: 'Achille' }])
+      expect.assertions(2)
+      expect(await resource.getMany()).toEqual([{ id: 1, firstName: 'Achille', lastName: 'Peleus' }])
+      expect(Users.findAll).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('update', () => {
     it('returns the updated item', async () => {
-      const req = { body: { id: 1, firstName: 'Achille', weakness: 'heel' } }
-      expect(await resource.update(req)).toEqual({ id: 1, firstName: 'Achille', weakness: 'heel' })
+      expect.assertions(2)
+      const body = { firstName: 'Achilleus', lastName: 'Peleus' }
+      const req = { params: { id: 1 }, body }
+      expect(await resource.update(req)).toEqual({ id: 1, firstName: 'Achilleus', lastName: 'Peleus' })
+      expect(Users.update).toHaveBeenCalledWith({ id: 1, ...body })
     })
   })
 
   describe('create', () => {
     it('returns the created item', async () => {
-      const req = { body: { firstName: 'Hector' } }
-      expect(await resource.create(req)).toEqual({ id: 2, firstName: 'Hector' })
+      const body = { firstName: 'Hector', lastName: 'Troy' }
+      const req = { body }
+      expect(await resource.create(req)).toEqual({ id: 2, firstName: 'Hector', lastName: 'Troy' })
+      expect(Users.create).toHaveBeenCalledWith(body)
     })
   })
 
@@ -56,6 +44,7 @@ describe('Resource', () => {
     it('returns the deleted id', async () => {
       const req = { params: { id: 1 } }
       expect(await resource.delete(req)).toBe(1)
+      expect(Users.delete).toHaveBeenCalledWith(1)
     })
   })
 })
